@@ -46,10 +46,6 @@ const Visualizer = ({ data }: { data: Point3D[] }) => {
 
     if (data.length === 0) return
 
-    const maxCoord = Math.max(
-      ...data.map((p) => Math.max(Math.abs(p.x), Math.abs(p.y), Math.abs(p.z))),
-    )
-
     const bounds = findBounds(data)
     const center = {
       x: bounds.x[0] + (bounds.x[1] - bounds.x[0]) / 2,
@@ -70,32 +66,59 @@ const Visualizer = ({ data }: { data: Point3D[] }) => {
       const p5 = (await import("p5")).default
 
       const sketch = (p: any) => {
-        let angle = 0
 
-        const resize = () => {
+        let rotating = true
+        let yaw = 0
+        let pitch = -0.3
+        let radius = 500
+
+        let minSize = 1000
+
+        p.windowResized = () => {
           const { offsetWidth, offsetHeight } = containerRef.current!
+          minSize = Math.min(offsetWidth, offsetHeight)
           p.resizeCanvas(offsetWidth, offsetHeight)
         }
 
         p.setup = () => {
           const { offsetWidth, offsetHeight } = containerRef.current!
+          minSize = Math.min(offsetWidth, offsetHeight)
           p.createCanvas(offsetWidth, offsetHeight, p.WEBGL)
         }
 
-        p.windowResized = resize
+        p.mouseDragged = () => {
+          rotating = false
+
+          yaw += p.movedX * 0.01
+          pitch += p.movedY * 0.01
+
+          const limit = Math.PI / 2 - 0.1
+          pitch = Math.max(-limit, Math.min(limit, pitch))
+
+          return false
+        }
+
+        p.mouseWheel = (event: WheelEvent) => {
+          radius -= event.deltaY * 0.5
+
+          radius = Math.max(50, Math.min(3000, radius))
+
+          return false
+        }
 
         p.draw = () => {
           p.background(15)
 
-          const scale = scaleRef.current
+          if (rotating) { yaw += 0.01 }
+
+          const scale = scaleRef.current * (minSize / 500)
           const center = centerRef.current
 
-          angle += 0.005
-          const radius = 500
-          const camX = Math.cos(angle) * radius
-          const camZ = Math.sin(angle) * radius
+          const camX = Math.cos(pitch) * Math.sin(yaw) * radius
+          const camY = Math.sin(pitch) * radius
+          const camZ = Math.cos(pitch) * Math.cos(yaw) * radius
 
-          p.camera(camX, -200, camZ, 0, 0, 0, 0, 1, 0)
+          p.camera(camX, camY, camZ, 0, 0, 0, 0, 1, 0)
 
           p.ambientLight(150)
           p.pointLight(255, 255, 255, 0, 0, 300)
@@ -105,8 +128,12 @@ const Visualizer = ({ data }: { data: Point3D[] }) => {
 
           for (const point of dataRef.current) {
             p.push()
-            p.translate((point.x - center.x) * scale, (point.y - center.y) * scale, (point.z - center.z) * scale)
-            p.sphere(scale*400)
+            p.translate(
+              (point.x - center.x) * scale,
+              (point.y - center.y) * scale,
+              (point.z - center.z) * scale,
+            )
+            p.sphere(scale * 400)
             p.pop()
           }
         }
