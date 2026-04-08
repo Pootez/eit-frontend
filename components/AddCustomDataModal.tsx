@@ -11,7 +11,7 @@ import {
   useDisclosure,
 } from "@heroui/react"
 import { useContext } from "react"
-import { GrConfigure } from "react-icons/gr"
+import { IoIosAddCircleOutline } from "react-icons/io"
 
 const AddCustomDataModal = () => {
   const { customData, setCustomData } = useContext(CustomDataContext)
@@ -23,7 +23,7 @@ const AddCustomDataModal = () => {
         color="primary"
         href="#"
         variant="faded"
-        endContent={<GrConfigure size="15px" />}
+        endContent={<IoIosAddCircleOutline size="15px" />}
       >
         Add Data
       </Button>

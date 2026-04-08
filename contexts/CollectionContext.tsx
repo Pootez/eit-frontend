@@ -2,6 +2,8 @@ import useCollection, { CollectionData } from "@/hooks/useCollection"
 import React, { createContext, useEffect, useState } from "react"
 
 export type CollectionContextType = {
+  enabled: boolean
+  setEnabled: React.Dispatch<React.SetStateAction<boolean>>
   apiKey: string
   setApiKey: React.Dispatch<React.SetStateAction<string>>
   collectionId: string
@@ -13,6 +15,8 @@ export type CollectionContextType = {
 }
 
 export const CollectionContext = createContext<CollectionContextType>({
+  enabled: false,
+  setEnabled: () => {},
   apiKey: "",
   setApiKey: () => {},
   collectionId: "",
@@ -24,6 +28,7 @@ export const CollectionContext = createContext<CollectionContextType>({
 })
 
 export const CollectionContextProvider = ({ children }: { children: any }) => {
+  const [enabled, setEnabled] = useState(false)
   const [apiKey, setApiKey] = useState("")
   const [collectionId, setCollectionId] = useState("")
   const [isRefresh, setRefresh] = useState(false)
@@ -35,7 +40,8 @@ export const CollectionContextProvider = ({ children }: { children: any }) => {
   const { collectionData, isLoading, error } = useCollection(
     apiKey,
     collectionId,
-    [isRefresh],
+    enabled,
+    [isRefresh, enabled],
   )
 
   useEffect(() => {
@@ -48,6 +54,8 @@ export const CollectionContextProvider = ({ children }: { children: any }) => {
   return (
     <CollectionContext.Provider
       value={{
+        enabled,
+        setEnabled,
         apiKey,
         setApiKey,
         collectionId,

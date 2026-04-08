@@ -35,7 +35,6 @@ const CoordinatesCard = ({
       key={index}
       isPressable
       onPress={() => {
-        console.log(coordinates)
         setCoordinates(coordinates)
       }}
     >

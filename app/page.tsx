@@ -17,26 +17,31 @@ const placeholderData = [
 export default function Home() {
   const { collectionData, error } = useContext(CollectionContext)
   const { customData } = useContext(CustomDataContext)
-  const [coordinates, setCoordinates] =
-    useState<{ x: number; y: number; z: number }[]>([])
+  const [coordinates, setCoordinates] = useState<
+    { x: number; y: number; z: number }[]
+  >([])
 
   // const inbox = collectionData
   //   ? [{ payload: placeholderData }, ...collectionData.data]
   //   : [{ payload: placeholderData }]
 
-  const inbox = customData.map((dataString) => {
-    return {
-      payload: dataString,
-    }
-  })
+  const collection = collectionData ? collectionData.data : []
+  const inbox = [
+    ...collection,
+    ...customData.map((dataString) => {
+      return {
+        payload: dataString,
+      }
+    }),
+  ]
 
   return (
-    <div className="flex flex-col min-h-screen dark">
+    <div className="flex flex-col min-h-screen max-h-screen dark overflow-hidden">
       <Navigation />
 
-      <main className="flex flex-col flex-1 dark:bg-gray-950">
-        <div className="grid grid-cols-[300px_1fr] grid-rows-1 flex-1 h-full min-h-0">
-          <div className="flex flex-col items-stretch gap-2 p-2">
+      <main className="flex flex-col flex-1 dark:bg-gray-950 min-h-0">
+        <div className="grid grid-cols-[300px_1fr] grid-rows-1 flex-1 h-full min-h-0 overflow-hidden">
+          <div className="flex flex-col items-stretch gap-2 p-2 overflow-y-auto min-h-0 [&>*]:shrink-0">
             <AddCustomDataModal />
             {inbox
               ? inbox.map((obj, idx) => {
@@ -51,6 +56,7 @@ export default function Home() {
                 })
               : "No data"}
           </div>
+
           <div className="flex flex-col flex-1 min-h-0">
             <Visualizer data={coordinates} />
           </div>

@@ -3,16 +3,23 @@ import { CollectionsApi, Configuration } from "@lab5e/ts-fetch-spanapi"
 import { z } from "zod"
 
 export const collectionDataSchema = z.object({
-  data: z.array(
-    z.object({
-      payload: z.string(),
-    })
-  ).min(1),
+  data: z
+    .array(
+      z.object({
+        payload: z.string(),
+      }),
+    )
+    .min(1),
 })
 
 export type CollectionData = z.infer<typeof collectionDataSchema>
 
-const useCollection = (apiKey: string, collectionId: string, deps?: any[]) => {
+const useCollection = (
+  apiKey: string,
+  collectionId: string,
+  enabled: boolean,
+  deps?: any[],
+) => {
   const [collectionData, setCollectionData] = useState<
     CollectionData | undefined
   >(undefined)
@@ -21,6 +28,7 @@ const useCollection = (apiKey: string, collectionId: string, deps?: any[]) => {
 
   useEffect(
     () => {
+      if (!enabled) return
       const controller = new AbortController()
 
       const api = new CollectionsApi(new Configuration({ apiKey }))

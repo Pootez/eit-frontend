@@ -15,7 +15,7 @@ import { useContext } from "react"
 import { GrConfigure } from "react-icons/gr"
 
 const EditConfigModal = () => {
-  const { refresh, setApiKey, setCollectionId } = useContext(CollectionContext)
+  const { enabled, setApiKey, setCollectionId } = useContext(CollectionContext)
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
   return (
     <div>
@@ -24,6 +24,7 @@ const EditConfigModal = () => {
         color="primary"
         href="#"
         variant="faded"
+        isDisabled={!enabled}
         endContent={<GrConfigure size="15px"/>}
       >
         Edit Config
