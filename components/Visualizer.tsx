@@ -9,7 +9,7 @@ type Point3D = {
 }
 
 const findBounds = (points: Point3D[]) => {
-  const initialBounds = [1000000, 0]
+  const initialBounds = [0, 100000000]
   return points.reduce(
     (bounds, point) => {
       const x = [
@@ -57,7 +57,7 @@ const Visualizer = ({ data }: { data: Point3D[] }) => {
       z: bounds.z[0] + (bounds.z[1] - bounds.z[0]) / 2,
     }
 
-    scaleRef.current = maxCoord === 0 ? 1 : 250 / maxCoord
+    scaleRef.current = 200 / Math.max(center.x, center.y, center.z)
     centerRef.current = center
   }, [data])
 
@@ -87,8 +87,11 @@ const Visualizer = ({ data }: { data: Point3D[] }) => {
         p.draw = () => {
           p.background(15)
 
-          angle += 0.01
-          const radius = 600
+          const scale = scaleRef.current
+          const center = centerRef.current
+
+          angle += 0.005
+          const radius = 500
           const camX = Math.cos(angle) * radius
           const camZ = Math.sin(angle) * radius
 
@@ -100,12 +103,10 @@ const Visualizer = ({ data }: { data: Point3D[] }) => {
           p.noStroke()
           p.fill(255, 0, 0)
 
-          const scale = scaleRef.current
-
           for (const point of dataRef.current) {
             p.push()
-            p.translate(point.x * scale, point.y * scale, point.z * scale)
-            p.sphere(5)
+            p.translate((point.x - center.x) * scale, (point.y - center.y) * scale, (point.z - center.z) * scale)
+            p.sphere(scale*400)
             p.pop()
           }
         }

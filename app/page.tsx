@@ -5,16 +5,7 @@ import Navigation from "@/components/Navigation"
 import Visualizer from "@/components/Visualizer"
 import { CollectionContext } from "@/contexts/CollectionContext"
 import { CustomDataContext } from "@/contexts/CustomDataContext"
-import { useContext, useEffect, useState } from "react"
-
-const datapoints = [
-  { x: 0, y: 0, z: 0 },
-  { x: 100, y: 100, z: 100 },
-  { x: 40, y: 40, z: 0 },
-  { x: 0, y: 0, z: 50 },
-  { x: 100, y: 100, z: 0 },
-  { x: 40, y: 0, z: 0 },
-]
+import { useContext, useState } from "react"
 
 const placeholderData = [
   "040104020411044204010000000000000000",
@@ -27,7 +18,7 @@ export default function Home() {
   const { collectionData, error } = useContext(CollectionContext)
   const { customData } = useContext(CustomDataContext)
   const [coordinates, setCoordinates] =
-    useState<{ x: number; y: number; z: number }[]>(datapoints)
+    useState<{ x: number; y: number; z: number }[]>([])
 
   // const inbox = collectionData
   //   ? [{ payload: placeholderData }, ...collectionData.data]

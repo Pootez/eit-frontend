@@ -1,29 +1,8 @@
 import { Card, CardBody, CardHeader } from "@heroui/react"
 
-// const decodeCoordinateString = (coordinateString: string) => {
-//   const segments = coordinateString.match(/.{1,12}/g) as string[]
-//   const coordinates = segments
-//     .map((segment) => segment.match(/.{1,4}/g) as string[])
-//     .filter((arr) => arr.length === 3)
-//     .map((coords) => {
-//       return {
-//         x: Number("0x" + coords[0]),
-//         y: Number("0x" + coords[1]),
-//         z: Number("0x" + coords[2]),
-//       }
-//     })
-//   return coordinates
-// }
-
 const decodeCoordinateString = (coordinateString: string) => {
   const length = coordinateString.length
   const n = length / 3
-
-  //   const coordinateStrings = [
-  //     coordinateString.slice(0, n),
-  //     coordinateString.slice(n, 2 * n),
-  //     coordinateString.slice(2 * n),
-  //   ]
 
   const coordinates = coordinateString
     .match(/.{1,4}/g)
@@ -33,7 +12,7 @@ const decodeCoordinateString = (coordinateString: string) => {
       return {
         x: (index % m) * 1000,
         y: Number("0x" + hex) * 10,
-        z: Math.floor(index / m) * 1000,
+        z: Math.floor(index / m) * 2000,
       }
     })
 
