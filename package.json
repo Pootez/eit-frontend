@@ -9,9 +9,15 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@heroui/react": "^2.8.9",
+    "@lab5e/ts-fetch-spanapi": "^5.0.5",
+    "framer-motion": "^12.34.3",
     "next": "16.1.6",
+    "p5": "^2.2.2",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "react-icons": "^5.5.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

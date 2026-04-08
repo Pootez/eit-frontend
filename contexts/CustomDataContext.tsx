@@ -1,20 +1,9 @@
-"use client"
-import AddCustomDataModal from "@/components/AddCustomDataModal"
-import CoordinatesCard from "@/components/CoordinatesCard"
-import Navigation from "@/components/Navigation"
-import Visualizer from "@/components/Visualizer"
-import { CollectionContext } from "@/contexts/CollectionContext"
-import { CustomDataContext } from "@/contexts/CustomDataContext"
-import { useContext, useEffect, useState } from "react"
+import { createContext, useEffect, useState } from "react"
 
-const datapoints = [
-  { x: 0, y: 0, z: 0 },
-  { x: 100, y: 100, z: 100 },
-  { x: 40, y: 40, z: 0 },
-  { x: 0, y: 0, z: 50 },
-  { x: 100, y: 100, z: 0 },
-  { x: 40, y: 0, z: 0 },
-]
+export type CustomDataContextType = {
+  customData: string[]
+  setCustomData: (data: string[]) => void
+}
 
 const placeholderData = [
   "040104020411044204010000000000000000",
@@ -23,48 +12,39 @@ const placeholderData = [
   "042e042e042e047908a908a704d40878089308af0516093d09cd09d211ef040803c103c403c403ae03b203b403b503b703c103bb03c303c103c103c403ca03ca03cd03ce03d303d603d703c103c303c803ca03d003ea03d603d9040b03fc0433048708e708b708b808b8089f04ea04ee04e704ea04e804ec04e804e804e704ea050104e904eb04ea04e904e704e704e704ee04e704cf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000042f042f043004320439043c045d088808a308a70929092108f803f803ae039c039b039c039f03a203a403a803a803a703b103b503b103b103b403b403b703bb03bd03d903dd03c403df03e303e503e903eb03d603da03d903e603f807ea08820479046b08e008c908c808b108b008b308b008b008b008ad08b008b008af08b608ad08af08af08ae08ad08b008b008ae08b008ac08b50000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008bb0462049708bb0486088608a008a008b90452043404150412086c041f03be03c003c403c403c703c703c803e603e603e603e903ec03ed03d403d703f303dd03e003de03e103e3040204020405040803f303f503f803f9043004650453047509cd08de08c508c108dd08c608c208c108c208c708c108c308c408c508c508c108c208c308c208c508aa08a908ad08a908ab08ac08ac00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
 ]
 
-export default function Home() {
-  const { collectionData, error } = useContext(CollectionContext)
-  const { customData } = useContext(CustomDataContext)
-  const [coordinates, setCoordinates] =
-    useState<{ x: number; y: number; z: number }[]>(datapoints)
+const LSLocation = "custom_data"
 
-  // const inbox = collectionData
-  //   ? [{ payload: placeholderData }, ...collectionData.data]
-  //   : [{ payload: placeholderData }]
+export const CustomDataContext = createContext<CustomDataContextType>({
+  customData: [],
+  setCustomData: (data: string[]) => {},
+})
 
-  const inbox = customData.map((dataString) => {
-    return {
-      payload: dataString,
+export const CustomDataContextProvider = ({ children }: { children: any }) => {
+  const [customData, setData] = useState<string[]>([])
+  const setCustomData = (data: string[]) => {
+    localStorage.setItem(LSLocation, JSON.stringify(data))
+    setData(data)
+  }
+
+  useEffect(() => {
+    const stored = localStorage.getItem(LSLocation)
+    if (!stored) {
+      localStorage.setItem(LSLocation, JSON.stringify(placeholderData))
+      setCustomData(placeholderData)
+    } else {
+      const storedData = JSON.parse(stored) as string[]
+      setCustomData(storedData)
     }
-  })
+  }, [])
 
   return (
-    <div className="flex flex-col min-h-screen dark">
-      <Navigation />
-
-      <main className="flex flex-col flex-1 dark:bg-gray-950">
-        <div className="grid grid-cols-[300px_1fr] grid-rows-1 flex-1 h-full min-h-0">
-          <div className="flex flex-col items-stretch gap-2 p-2">
-            <AddCustomDataModal />
-            {inbox
-              ? inbox.map((obj, idx) => {
-                  return (
-                    <CoordinatesCard
-                      key={idx}
-                      dataString={obj.payload}
-                      setCoordinates={setCoordinates}
-                      index={idx}
-                    />
-                  )
-                })
-              : "No data"}
-          </div>
-          <div className="flex flex-col flex-1 min-h-0">
-            <Visualizer data={coordinates} />
-          </div>
-        </div>
-      </main>
-    </div>
+    <CustomDataContext.Provider
+      value={{
+        customData,
+        setCustomData,
+      }}
+    >
+      {children}
+    </CustomDataContext.Provider>
   )
 }
