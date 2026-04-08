@@ -17,41 +17,39 @@ const Navigation = () => {
   } = useContext(CollectionContext)
 
   return (
-    <>
-      <Navbar isBordered className="dark:bg-gray-900">
-        <NavbarContent className="hidden flex flex-row justify-between w-full sm:flex">
+    <Navbar isBordered className="dark:bg-gray-900">
+      <NavbarContent className="flex flex-row justify-start align-start w-full">
+        <NavbarItem>
+          <ToggleSpanButton />
+        </NavbarItem>
+        <NavbarItem>
+          <Button
+            onPress={refresh}
+            isLoading={isLoading}
+            color="primary"
+            href="#"
+            variant="faded"
+            isDisabled={!enabled}
+            startContent={<IoMdRefresh size="20px" />}
+          >
+            Refresh
+          </Button>
+        </NavbarItem>
+        <NavbarItem>
+          <EditConfigModal />
+        </NavbarItem>
+        {enabled && (
           <NavbarItem>
-            <ToggleSpanButton />
+            <div className="flex gap-1 p-2 shrink-0">
+              {!apiKey && <Chip>Missing API key</Chip>}
+              {!collectionId && <Chip>Missing collection ID</Chip>}
+              {!collectionData && <Chip>No data</Chip>}
+              {error && <Chip>{error}</Chip>}
+            </div>
           </NavbarItem>
-          <NavbarItem>
-            <Button
-              onPress={refresh}
-              isLoading={isLoading}
-              color="primary"
-              href="#"
-              variant="faded"
-              isDisabled={!enabled}
-              startContent={<IoMdRefresh size="20px" />}
-            >
-              Refresh
-            </Button>
-          </NavbarItem>
-          <NavbarItem>
-            <EditConfigModal />
-          </NavbarItem>
-          {enabled && (
-            <NavbarItem>
-              <div className="flex gap-1 p-2 shrink-0">
-                {!apiKey && <Chip>Missing API key</Chip>}
-                {!collectionId && <Chip>Missing collection ID</Chip>}
-                {!collectionData && <Chip>No data</Chip>}
-                {error && <Chip>{error}</Chip>}
-              </div>
-            </NavbarItem>
-          )}
-        </NavbarContent>
-      </Navbar>
-    </>
+        )}
+      </NavbarContent>
+    </Navbar>
   )
 }
 

@@ -66,13 +66,14 @@ const Visualizer = ({ data }: { data: Point3D[] }) => {
       const p5 = (await import("p5")).default
 
       const sketch = (p: any) => {
-
         let rotating = true
         let yaw = 0
         let pitch = -0.3
         let radius = 500
 
         let minSize = 1000
+        let isHoveringCanvas = false
+        let canvas: any
 
         p.windowResized = () => {
           const { offsetWidth, offsetHeight } = containerRef.current!
@@ -83,10 +84,21 @@ const Visualizer = ({ data }: { data: Point3D[] }) => {
         p.setup = () => {
           const { offsetWidth, offsetHeight } = containerRef.current!
           minSize = Math.min(offsetWidth, offsetHeight)
-          p.createCanvas(offsetWidth, offsetHeight, p.WEBGL)
+
+          canvas = p.createCanvas(offsetWidth, offsetHeight, p.WEBGL)
+
+          canvas.mouseOver(() => {
+            isHoveringCanvas = true
+          })
+
+          canvas.mouseOut(() => {
+            isHoveringCanvas = false
+          })
         }
 
         p.mouseDragged = () => {
+          if (!isHoveringCanvas) return
+
           rotating = false
 
           yaw += p.movedX * 0.01
@@ -99,8 +111,9 @@ const Visualizer = ({ data }: { data: Point3D[] }) => {
         }
 
         p.mouseWheel = (event: WheelEvent) => {
-          radius -= event.deltaY * 0.5
+          if (!isHoveringCanvas) return
 
+          radius -= event.deltaY * 0.5
           radius = Math.max(50, Math.min(3000, radius))
 
           return false
@@ -109,7 +122,9 @@ const Visualizer = ({ data }: { data: Point3D[] }) => {
         p.draw = () => {
           p.background(15)
 
-          if (rotating) { yaw += 0.01 }
+          if (rotating) {
+            yaw += 0.01
+          }
 
           const scale = scaleRef.current * (minSize / 500)
           const center = centerRef.current
@@ -149,7 +164,12 @@ const Visualizer = ({ data }: { data: Point3D[] }) => {
     }
   }, [])
 
-  return <div ref={containerRef} className="w-full h-full flex-1 min-h-0" />
+  return (
+    <div
+      ref={containerRef}
+      className="w-full h-full flex-1 min-h-0 overflow-hidden"
+    />
+  )
 }
 
 export default Visualizer
