@@ -12,7 +12,7 @@ const ToggleSpanButton = () => {
       color="primary"
       href="#"
       variant={!enabled ? "solid" : "ghost"}
-      endContent={!enabled ? <FaToggleOn /> : <FaToggleOff />}
+      endContent={enabled ? <FaToggleOn /> : <FaToggleOff />}
     >
       {!enabled ? "Enable Span" : "Disable Span"}
     </Button>
